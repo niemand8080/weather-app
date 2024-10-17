@@ -32,27 +32,6 @@ export async function GET(req: NextRequest): Promise<Response> {
   }
 }
 
-// export async function POST(req: NextRequest): Promise<Response> {
-//   console.log("TEST")
-//   const now = new Date().getTime();
-//   try {
-//     const body = await req.json();
-    
-//     if (last.action == body.action && last.time > now - 100) return NextResponse.json({ error: 'To fast call' }, { status: 425 });
-    
-//     last.time = now;
-//     last.action = body.action;
-    
-//     if (body.action === "getData") {
-//       return NextResponse.json({ result: await getData(body.location) }, { status: 200 });
-//     } else {
-//       return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
-//     }
-//   } catch (error) {
-//     return NextResponse.json({ error: 'Bad Request' }, { status: 400 });
-//   }
-// }
-
 async function getJSONFile(filename: string) {
   try {
     const filePath = path.join(process.cwd(), 'data', filename);
@@ -68,15 +47,25 @@ async function getJSONFile(filename: string) {
 async function getData(location: LocationType) {
   const { name, lat, lon } = location;
   const json = await getJSONFile("data.json");
-  const now = new Date().getTime();
-  const locationData = await getLocation(lat || 52.52, lon || 13.41);
-  const locationName =
-    locationData && locationData.results
-      ? locationData.results[0].address_line2
-      : name;
-  const locLat = locationData.results[0].lat;
-  const locLon = locationData.results[0].on;
-  let data = json[locationName];
+  const now = Math.floor(new Date().getTime() / (1000 * 60 * 60 * 24));
+  let locName = name || "";
+  let locLat = 0;
+  let locLon = 0;
+  if (name) {
+    const loc = await getLocationFromName(name);
+    locName = loc.features[0].properties.formatted;
+    locLat = loc.features[0].properties.lat;
+    locLon = loc.features[0].properties.lon;
+  } else {
+    const locationData = await getLocation(lat || 52.52, lon || 13.41);
+    locName =
+      locationData && locationData.results
+        ? locationData.results[0].address_line2
+        : name;
+    locLat = locationData.results[0].lat;
+    locLon = locationData.results[0].on;
+  }
+  let data = json[locName];
 
   if (!data || data.expiry < now) {
     try {
@@ -88,6 +77,8 @@ async function getData(location: LocationType) {
   }
   return data;
 }
+
+// TODO get lat lon from name
 
 async function getWeather(lat: number, lon: number) {
   const weather = await api(`
@@ -102,13 +93,19 @@ async function getLocation(lat: number, lon: number) {
   );
   return location;
 }
+async function getLocationFromName(name: string) {
+  const location = await api(
+    `https://api.geoapify.com/v1/geocode/search?text=${encodeURI(name)}&apiKey=${process.env.GEOAPIFY_API_KEY}`
+  );
+  return location;
+}
 
 async function addData(data: any = {}, lat = 52.52, lon = 13.41) {
   try {
     const location = await getLocation(lat, lon);
     const weather = await getWeather(lat, lon);
     const newData = {
-      expiry: new Date().getTime() + 3600000,
+      expiry: Math.floor((new Date().getTime() + (1000 * 60 * 60 * 24)) / (1000 * 60 * 60 * 24)),
       location: {
         lat: lat,
         lon: lon,

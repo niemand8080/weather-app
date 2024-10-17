@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { TooltipProvider } from "@radix-ui/react-tooltip";
+import { ThemeProvider } from "@/components/provider/theme-provider";
+import { ModeToggle } from "@/components/ui/modde-toggle";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -25,11 +27,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html className="dark" lang="en">
+    <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased text-zinc-50 bg-zinc-950 w-screen h-screen`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased dark:text-zinc-50 dark:bg-zinc-950 w-screen h-screen`}
       >
-        <TooltipProvider>{children}</TooltipProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <TooltipProvider>{children}</TooltipProvider>
+        <div className="top-1 right-5 fixed">
+          <ModeToggle />
+        </div>
+        </ThemeProvider>
       </body>
     </html>
   );
