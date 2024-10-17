@@ -26,6 +26,8 @@ export default function Page() {
   const [daily, setDaily] = useState<DailyWeatherType[]>([]);
   const [hourly, setHourly] = useState<HourlyWeatherType>();
   const [hourlyUnits, setHourlyUnits] = useState<HourlyUnitsType>();
+  const [latitude, setLatitude] = useState<number>(52.49779835);
+  const [longitude, setLongitude] = useState<number>(13.466785458352375);
 
   const weekday = [
     "Sunday",
@@ -36,14 +38,11 @@ export default function Page() {
     "Friday",
     "Saturday",
   ];
-  const getData = async (
-    lat: number = 52.49779835,
-    lon: number = 13.466785458352375
-  ) => {
+  const getData = async () => {
     try {
       // TODO Bekomme lat, lon oder name und setze ein
       const response = await fetch(
-        `http://localhost:3000/api?a=getData&lat=${lat}&lon=${lon}`
+        `http://localhost:3000/api?a=getData&lat=${latitude}&lon=${longitude}`
       );
       if (!response.ok) {
         console.log("Error:", response.status);
@@ -77,20 +76,29 @@ export default function Page() {
         <>
           <h1 className="text-2xl font-bold mt-28">{data.location.name}</h1>
           <AlertDialog>
-            <AlertDialogTrigger>Ändere Ort</AlertDialogTrigger>
+            <AlertDialogTrigger>Ort Ändern</AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Gib die </AlertDialogTitle>
-                <AlertDialogDescription>
-                  This action cannot be undone. This will permanently delete
-                  your account and remove your data from our servers.
-                  <Input type="number" placeholder="lat" />
-                  <Input type="number" placeholder="lon" />
+                <AlertDialogTitle>Stand Ort</AlertDialogTitle>
+                <AlertDialogDescription className="gap-2 flex flex-col">
+                  Gib den Längen- und Breitengrad des gewünschten Ortes an.
+                  <Input 
+                    onChange={(e) => setLatitude(Number(e.target.value))}
+                    value={latitude}
+                    type="number" 
+                    placeholder="Breitengradd" 
+                  />
+                  <Input 
+                    onChange={(e) => setLongitude(Number(e.target.value))}
+                    value={longitude}
+                    type="number" 
+                    placeholder="Längengrad" 
+                  />
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction>Continue</AlertDialogAction>
+                <AlertDialogAction onClick={() => getData()}>Ändern</AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
