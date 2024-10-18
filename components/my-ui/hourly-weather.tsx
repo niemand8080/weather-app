@@ -152,28 +152,28 @@ export const HourlyWeather: React.FC<{
           </Item>
           <Item
             obj={formated.cloud_cover}
-            name="Wolkendecke"
+            name="Wolken bedeckt"
             unit={units?.cloud_cover}
           >
             <Cloud className="w-5 h-5" />
           </Item>
           <Item
             obj={formated.cloud_cover_low}
-            name="Wolkendecke niedrig"
+            name="Wolken bedeckt niedrig"
             unit={units?.cloud_cover_low}
           >
             <Cloud className="w-5 h-5" />
           </Item>
           <Item
             obj={formated.cloud_cover_mid}
-            name="Wolkendecke Mitte"
+            name="Wolken bedeckt Mitte"
             unit={units?.cloud_cover_mid}
           >
             <Cloud className="w-5 h-5" />
           </Item>
           <Item
             obj={formated.cloud_cover_high}
-            name="Wolkendecke hoch"
+            name="Wolken bedeckt hoch"
             unit={units?.cloud_cover_high}
           >
             <Cloud className="w-5 h-5" />

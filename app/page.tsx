@@ -21,6 +21,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Sun, Cloudy, CloudSun, CloudSunRain, LoaderCircle } from 'lucide-react';
 
 export default function Page() {
   const [data, setData] = useState<any>(undefined);
@@ -37,6 +38,7 @@ export default function Page() {
     name?: string;
   }>();
   const [searchWName, setSearchWName] = useState<boolean>(false);
+  const [icon, setIcon] = useState<"sun" | "sun-cloud" | "cloud" | "cloud-sun-rain" | "cloud-rain">("sun");
 
   const weekday = [
     "Sunday",
@@ -138,13 +140,35 @@ export default function Page() {
     setDaily(data.weather.daily.data);
     setHourly(data.weather.hourly.data[formatDate("d")]);
     setHourlyUnits(data.weather.hourly.units);
+    const sunshine = data.weather.daily.data[formatDate("d")].sunshine_duration;
+    const rain = data.weather.daily.data[formatDate("d")].precipitation_sum;
+    if (sunshine <= 2000 && rain > 5) {
+      setIcon("cloud-rain")
+    } else if (sunshine <= 2500 && rain > 5) {
+      setIcon("cloud-sun-rain");
+    } else if (sunshine < 2000) {
+      setIcon("cloud");
+    } else if (sunshine < 3000) {
+      setIcon("sun-cloud");
+    }
   }, [data]);
 
   return (
     <div className="w-screen h-screen overflow-x-hidden flex items-center gap-5 flex-col">
       {data && daily ? (
         <>
-          <h1 className={`text-2xl font-bold mt-20`}>{name}</h1>
+          <div className="text-primary mt-20">
+            {icon == "sun-cloud" ? (
+              <CloudSun size={100} />
+            ) : icon == "cloud" ? (
+              <Cloudy size={100} />
+            ) : icon == "cloud-rain" ? (
+              <CloudSunRain size={100} />
+            ) : (
+              <Sun size={100} />
+            )}
+          </div>
+          <h1 className={`text-2xl font-bold`}>{name}</h1>
           <AlertDialog>
             <AlertDialogTrigger>Ort Ändern</AlertDialogTrigger>
             <AlertDialogContent>
@@ -222,7 +246,9 @@ export default function Page() {
           <TestColor />
         </>
       ) : (
-        <span>Laden...</span>
+        <div className="h-screen items-center flex">
+          <LoaderCircle className="animate-spin" />
+        </div>
       )}
     </div>
   );

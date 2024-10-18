@@ -3,7 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { TooltipProvider } from "@radix-ui/react-tooltip";
 import { ThemeProvider } from "@/components/provider/theme-provider";
-import { ModeToggle } from "@/components/ui/modde-toggle";
+import { Header } from "./Header";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -37,10 +37,8 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <Header />
           <TooltipProvider>{children}</TooltipProvider>
-        <div className="top-1 right-5 fixed">
-          <ModeToggle />
-        </div>
         </ThemeProvider>
       </body>
     </html>
