@@ -38,6 +38,7 @@ export default function Page() {
     name?: string;
   }>();
   const [searchWName, setSearchWName] = useState<boolean>(false);
+  const [currentWeather, setCurrentWeather] = useState<any>();
   const [icon, setIcon] = useState<"sun" | "sun-cloud" | "cloud" | "cloud-sun-rain" | "cloud-rain">("sun");
 
   const weekday = [
@@ -95,6 +96,42 @@ export default function Page() {
     }
   };
 
+  const getCurrent = async (name: string, latitude: number, longitude: number) => {
+    if (
+      !longitude ||
+      !latitude ||
+      !name
+    ) {
+      alert(`Bitte setze name, Breiten- und Längengrad`);
+      return;
+    }
+    if (
+      current &&
+      current.lat == latitude &&
+      current.lon == longitude &&
+      current.name == name
+    )
+      return;
+    try {
+      const query = `http://localhost:3000/api?a=getData&lat=${latitude}&lon=${longitude}&name=${encodeURI(name || "")}`;
+      const response = await fetch(query);
+      if (!response.ok) {
+        console.log("Error:", response.status);
+        return;
+      }
+      const data = await response.json();
+      console.log(data);
+      if (!data.error) {
+        // data.result.day = weekday[new Date().getDay()];
+        // setCurrentWeather(data.result);
+      } else {
+        console.info("--------------api error-------------");
+      }
+    } catch (error) {
+      console.log("Error: ", error);
+    }
+  };
+
   const setLatLon = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -140,6 +177,11 @@ export default function Page() {
     setDaily(data.weather.daily.data);
     setHourly(data.weather.hourly.data[formatDate("d")]);
     setHourlyUnits(data.weather.hourly.units);
+    getCurrent(data.location.name, latitude || 0, longitude || 0);
+  }, [data]);
+
+  useEffect(() => {
+    if (!data) return;
     const sunshine = data.weather.daily.data[formatDate("d")].sunshine_duration;
     const rain = data.weather.daily.data[formatDate("d")].precipitation_sum;
     if (sunshine <= 2000 && rain > 5) {
@@ -151,7 +193,7 @@ export default function Page() {
     } else if (sunshine < 3000) {
       setIcon("sun-cloud");
     }
-  }, [data]);
+  }, [currentWeather]);
 
   return (
     <div className="w-screen h-screen overflow-x-hidden flex items-center gap-5 flex-col">
