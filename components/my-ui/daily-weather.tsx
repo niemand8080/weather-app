@@ -38,7 +38,7 @@ export const DailyWeather: React.FC<{
     <Card
       key={date}
       className={`${
-        current ? "border-primary" : "opacity-50"
+        current ? "border-primary" : "opacity-50 pointer-events-none"
       } transition-all duration-300`}
     >
       <CardHeader>
@@ -112,7 +112,7 @@ export const Item: React.FC<{ children: React.ReactNode; tip: string }> = ({
   tip,
 }) => {
   return (
-    <div>
+    <div className="hover:text-primary transition-all">
       <Tooltip>
         <TooltipTrigger>{children}</TooltipTrigger>
         <TooltipContent>{tip}</TooltipContent>
@@ -135,9 +135,9 @@ export const DailyWeatherCarousel: React.FC<{
 
     const ww = getWW();
     const dCount = ww == "xl" || ww == "2xl" ? 1 : ww == "sm" ? -1 : 0;
-    ClassNames({ snapped: "opacity-50", inView: "border-primary" });
+    ClassNames({ snapped: "filter-gray", inView: "border-primary" });
 
-    setCurrent(api.selectedScrollSnap() + dCount);
+    setCurrent(api.selectedScrollSnap() + 1);
     api.scrollNext();
 
     api.on("select", () => {
@@ -153,11 +153,13 @@ export const DailyWeatherCarousel: React.FC<{
   return (
     <Carousel setApi={setApi}>
       <CarouselContent>
-        <CarouselItem className={`md:basis-1/2 lg:basis-1/3`}>
-          <div className="border-accent rounded-lg flex items-center justify-center h-full text-zinc-600">
-            ...
-          </div>
-        </CarouselItem>
+        {getWW() != "" && getWW() != "sm" && getWW() != "md"  ? (
+          <CarouselItem className={`md:basis-1/2 lg:basis-1/3`}>
+            <div className="border-accent rounded-lg flex items-center justify-center h-full text-zinc-600">
+              ...
+            </div>
+          </CarouselItem>
+        ) : null}
         {Object.entries(daily).map(([date, weather], index) => (
           <CarouselItem key={index} className={`md:basis-1/2 lg:basis-1/3`}>
             <DailyWeather
@@ -167,11 +169,13 @@ export const DailyWeatherCarousel: React.FC<{
             ></DailyWeather>
           </CarouselItem>
         ))}
-        <CarouselItem className={`md:basis-1/2 lg:basis-1/3`}>
-          <div className="border-accent rounded-lg flex items-center justify-center h-full text-zinc-600">
-            ...
-          </div>
-        </CarouselItem>
+        {getWW() != "" && getWW() != "sm" && getWW() != "md"  ? (
+          <CarouselItem className={`md:basis-1/2 lg:basis-1/3`}>
+            <div className="border-accent rounded-lg flex items-center justify-center h-full text-zinc-600">
+              ...
+            </div>
+          </CarouselItem>
+        ) : null}
       </CarouselContent>
       <CarouselPrevious />
       <CarouselNext />

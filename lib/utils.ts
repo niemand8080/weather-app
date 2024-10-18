@@ -85,16 +85,18 @@ export type HourlyWeatherType = {
 export const getWW = () => {
   if (typeof window !== "undefined") {
     const w = window.innerWidth;
-    const ww =
-      w <= 640
-        ? "sm"
-        : w <= 768
-        ? "md"
-        : w <= 1024
-        ? "lg"
-        : w <= 1280
+    const ww = 
+      w >= 1536
+        ? "2xl"
+        : w >= 1280
         ? "xl"
-        : "2xl";
+        : w >= 1024
+        ? "lg"
+        : w >= 768
+        ? "md"
+        : w >= 640
+        ? "sm"
+        : ""
     return ww;
   }
   return "lg";

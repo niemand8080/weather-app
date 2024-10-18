@@ -21,7 +21,6 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ScrollArea } from "@/components/ui/scroll-area"
 
 export default function Page() {
   const [data, setData] = useState<any>(undefined);
@@ -66,7 +65,13 @@ export default function Page() {
       );
       return;
     }
-    if (current && current.lat == latitude && current.lon == longitude && current.name == name) return;
+    if (
+      current &&
+      current.lat == latitude &&
+      current.lon == longitude &&
+      current.name == name
+    )
+      return;
     try {
       const query = searchWName
         ? `http://localhost:3000/api?a=getData&name=${encodeURI(name || "")}`
@@ -139,11 +144,7 @@ export default function Page() {
     <div className="w-screen h-screen overflow-x-hidden flex items-center gap-5 flex-col">
       {data && daily ? (
         <>
-          <h1
-            className={`text-2xl font-bold mt-20`}
-          >
-            {name}
-          </h1>
+          <h1 className={`text-2xl font-bold mt-20`}>{name}</h1>
           <AlertDialog>
             <AlertDialogTrigger>Ort Ändern</AlertDialogTrigger>
             <AlertDialogContent>
@@ -163,7 +164,7 @@ export default function Page() {
                       Gib den Längen- und Breitengrad des gewünschten Ortes an.
                       <label htmlFor="lat">Breitengrad</label>
                       <Input
-                      id="lat"
+                        id="lat"
                         onChange={(e) => setLatitude(Number(e.target.value))}
                         value={latitude}
                         min={-90}

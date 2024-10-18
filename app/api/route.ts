@@ -67,7 +67,7 @@ async function getData(location: LocationType) {
   }
   let data = json[locName];
 
-  if (!data || data.expiry < now) {
+  if (!data || data.expiry <= now) {
     try {
       console.log("GET from API");
       data = await addData(json, locLat || lat, locLon || lon);
